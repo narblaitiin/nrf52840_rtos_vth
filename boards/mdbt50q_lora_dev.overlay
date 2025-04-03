@@ -1,0 +1,29 @@
+/*
+ * Copyright (c) 2025
+ * Regis Rousseau
+ * Univ Lyon, INSA Lyon, Inria, CITI, EA3720
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/* VBAT battery voltage monitoring */
+/* external ADC channnel of MDBT50Q, Port P0.03 on schematic */
+/ {
+	zephyr,user {
+		io-channels = <&adc 1>;
+	};
+};
+
+/* enable the corresponding ADC, with the correct configuration */
+&adc {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+	channel@1 {
+		reg = <1>;											/* channel 1 of the ADC */
+		zephyr,gain = "ADC_GAIN_1_6";						/* attenuated by 6 (x1/6) */
+		zephyr,reference = "ADC_REF_INTERNAL";				/* reference voltage +0.6 */
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;	/* 10us */
+		zephyr,input-positive = <NRF_SAADC_AIN1>;			/* P0.03 for nRF52xx */
+		zephyr,resolution = <12>;
+	};
+};
