@@ -51,6 +51,8 @@ int16_t app_nrf52_get_vbat()
 {
     int16_t percent = 0;
     int8_t ret = 0;
+    float max = 4.2;
+    float min = 3.0;
 
     // reading sample from the ADC
     ret = adc_read(adc_channel.dev, &sequence);
@@ -59,15 +61,7 @@ int16_t app_nrf52_get_vbat()
 	    return 0;
     }
 
-    // battery level received and converted from channel get
-    // resolution 12bits: 0 to 4095 (uint16)
-    ret = (adc_raw_to_millivolts_dt(&adc_channel, &buf))/1000;
-    if (ret < 0) {
-			printk("value in mV not available. error: %d\n", ret);
-		} else {
-			printk("vbat: %d mV\n", buf);
-		}
-    // quadratic curve fit of lipo voltage measurement
-    percent= (int16_t)(-2.281*pow(10,2)*buf) + (2.066*pow(10,3)*buf) - (4.57*pow(10,3)*buf);
+    // battery level in percent
+    percent = (int16_t) ((buf - min) / (max - min)) * 100.0;
     return percent;
 }
