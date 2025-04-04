@@ -40,7 +40,7 @@ int main(void)
 	printk("Sensor SHT31 and Battery Example\nBoard: %s\n", CONFIG_BOARD);
 
 	// beginning of interrupt subroutine
-	k_timer_start(&sens_timer, K_NO_WAIT, K_MSEC(30000));		// 10s for test
+	k_timer_start(&sens_timer, K_NO_WAIT, K_MSEC(30000));		// 30s for test
 
 	return 0;
 }
