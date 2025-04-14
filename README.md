@@ -1,4 +1,4 @@
-# Code for 6Sens Project : conversion and storage application of MDBT50Q SoC ADC (AIN1 - P0.03) and SHT31 sensor (I2C)
+# Code for 6Sens Project : testing the conversion and storage applications of MDBT50Q SoC ADC (AIN1 - P0.03) and SHT31 sensor (I2C)
 
 ## Overview
 This first code allows us to convert a voltage and digital values and adds processing to it:
@@ -14,9 +14,9 @@ This allows us to test SHT31 ennvironmental sensor and the internal ADC of the M
 The following commands clean build folder, build and flash the sample:
 
 **Command to use**
-
+````
 west build -t pristine
 
 west build -p always -b mdbt50q_lora_dev applications/nrf52840_rtos_vth
 
-west flash --runner pyocd
+west flash --runner jlink

@@ -30,13 +30,13 @@ int8_t app_flash_init(struct nvs_fs *fs)
 	ret = flash_get_page_info_by_offs(fs->flash_device, fs->offset, &info);
 	if (ret) {
 		printk("unable to get page info. error: %d\n", ret);
-		return 0;
+		return ret;
 	}
 	
 	fs->sector_size = info.size;
-	if (!fs->sector_size || fs->sector_size % info.size) {
+	if (!fs->sector_size) {
 		printk("invalid sector size\n");
-		return 0;
+		return -1;
 	}
 	printk("sector size: %d\n", info.size);
 
@@ -62,7 +62,7 @@ int8_t app_flash_store(struct nvs_fs *fs, struct vth *data)
 	int8_t itr;
 	
 	// writing data in the first page of 2kbytes
-	(void)nvs_write(fs, NVS_SENSOR_ID, &data, sizeof(data));
+	(void)nvs_write(fs, NVS_SENSOR_ID, data, sizeof(*data)*NVS_MAX_RECORDS);
 
 	// printing data to be stored in memory
 	for (itr = 0; itr < NVS_MAX_RECORDS; itr++) {
@@ -70,7 +70,7 @@ int8_t app_flash_store(struct nvs_fs *fs, struct vth *data)
 	}
 
 	// reading the first page
-	(void)nvs_read(fs, NVS_SENSOR_ID, &data, sizeof(data));
+	(void)nvs_read(fs, NVS_SENSOR_ID, data, sizeof(*data)*NVS_MAX_RECORDS);
 
 	// printing data stored in memory
 	for (itr = 0; itr < NVS_MAX_RECORDS; itr++) {
@@ -82,27 +82,26 @@ int8_t app_flash_store(struct nvs_fs *fs, struct vth *data)
 //  ========== app_flash_handler ===========================================================
 int8_t app_flash_handler(struct nvs_fs *fs)
 {
-	int8_t itr;
+	int8_t itr = 0;
 	int16_t vbat, temp, hum;
 	const struct device *dev;
 	struct vth data[NVS_MAX_RECORDS];
 
-	// getting all sensor devices
+	// get sensor device
 	dev = DEVICE_DT_GET_ONE(sensirion_sht3xd);
 
-	// putting n structures in fisrt page for this test
+	// collect sensor data
 	while (itr < NVS_MAX_RECORDS) {
 		data[itr].vbat = app_nrf52_get_vbat();
 		data[itr].temp = app_sht31_get_temp(dev);
 		data[itr].hum = app_sht31_get_hum(dev);
 		itr++;
 	}
-	// writing and reading stored data
+	// store data in flash memory
 	app_flash_store(fs, &data);
 
-	// cleaning data storage partitiony
+	// clear the data from flash (for test purposes)
 	(void)nvs_delete(fs, NVS_SENSOR_ID);
-	itr = 0;
 	return 0;
 }
 

@@ -33,12 +33,14 @@ int16_t app_sht31_get_temp(const struct device *dev)
     struct sensor_value val;
     int32_t temp = 0;
     int8_t ret = 0;
-    int8_t scale = 100;
+
+    // get sensor device
+	dev = DEVICE_DT_GET_ONE(sensirion_sht3xd);
 
     // fetching data
 	ret = sensor_sample_fetch(dev);
     if (ret < 0 && ret != -EBADMSG) { 
-	    printk("SHT31 device sample is not up to date. error: %d\n", ret);
+	    printk("sht31 device sample is not up to date. error: %d\n", ret);
 	    return 0;
     }
 
@@ -49,9 +51,10 @@ int16_t app_sht31_get_temp(const struct device *dev)
 	    return 0;
     }
 
-    // convert struct to int16
-    temp = (val.val1 * scale) + (val.val2 / (1000000)/scale);
-    printk("sht31 temp (int16): %d degree\n", temp);
+     // convert temperature to int16_t with scaling
+    temp = (val.val1 * TEMP_SCALE) + ((int64_t)val.val2 * TEMP_SCALE / 1000000);
+    printk("sht31 temperature: %d.%02d °C\n", temp / TEMP_SCALE, temp % TEMP_SCALE);
+    
     return (int16_t)temp;
 }
 
@@ -59,9 +62,12 @@ int16_t app_sht31_get_temp(const struct device *dev)
 int16_t app_sht31_get_hum(const struct device *dev)
 {
     struct sensor_value val;
-    float hum = 0;
+    int32_t hum = 0;
     int8_t ret = 0;
-    int8_t scale = 100;
+
+
+    // get sensor device
+	dev = DEVICE_DT_GET_ONE(sensirion_sht3xd);
 
     // fetching data
 	ret = sensor_sample_fetch(dev);
@@ -78,7 +84,8 @@ int16_t app_sht31_get_hum(const struct device *dev)
     }
 
     // convert struct to int16
-    hum = (val.val1 * scale) + (val.val2 / (1000000)/scale);
-    printk("sht31 humidity (int16): %d%%RH\n", hum);
+    hum = (val.val1 * HUM_SCALE) + ((int64_t)val.val2 * HUM_SCALE / 1000000);
+    printk("sht31 humidity: %d.%02d %%RH\n", hum / HUM_SCALE, hum % HUM_SCALE);
+    
     return (int16_t)hum;
 }
