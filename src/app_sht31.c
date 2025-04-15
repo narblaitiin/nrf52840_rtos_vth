@@ -11,13 +11,14 @@
 //  ========== app_sht31_init ==============================================================
 int8_t app_sht31_init(const struct device *dev)
 {
-    // getting sht31 sensor i2c device (SDA: P0.09, SCL:P0.0)
+    // retrieve the SHT31 sensor's I2C device instance (Pins: SDA -> P0.09, SCL -> P0.0)
     dev = DEVICE_DT_GET_ONE(sensirion_sht3xd);
     if (dev == NULL) {
         printk("error: no sht31 device found\n");
 		return 0;
 	}
 
+    // check if the retrieved device is ready for operation
     if (!device_is_ready(dev)) {
 		printk("error: sht31 is not ready\n");
 		return 0;
@@ -37,23 +38,25 @@ int16_t app_sht31_get_temp(const struct device *dev)
     // get sensor device
 	dev = DEVICE_DT_GET_ONE(sensirion_sht3xd);
 
-    // fetching data
+    // fetch the latest sample from the sensor
 	ret = sensor_sample_fetch(dev);
     if (ret < 0 && ret != -EBADMSG) { 
-	    printk("sht31 device sample is not up to date. error: %d\n", ret);
+	    printk("SHT31 device sample is not up to date. error: %d\n", ret);
 	    return 0;
     }
 
-    // getting channel function
+    // retrieve the ambient temperature from the sensor
 	ret = sensor_channel_get(dev, SENSOR_CHAN_AMBIENT_TEMP, &val);
     if (ret < 0) {
         printk("can't read sensor channels. error: %d\n", ret);
 	    return 0;
     }
 
-     // convert temperature to int16_t with scaling
+    // convert the raw temperature value to integer format with scaling
     temp = (val.val1 * TEMP_SCALE) + ((int64_t)val.val2 * TEMP_SCALE / 1000000);
-    printk("sht31 temperature: %d.%02d °C\n", temp / TEMP_SCALE, temp % TEMP_SCALE);
+
+    // print the temperature value with two decimal places
+    printk("SHT31 temperature: %d.%02d °C\n", temp / TEMP_SCALE, temp % TEMP_SCALE);
     
     return (int16_t)temp;
 }
@@ -69,22 +72,24 @@ int16_t app_sht31_get_hum(const struct device *dev)
     // get sensor device
 	dev = DEVICE_DT_GET_ONE(sensirion_sht3xd);
 
-    // fetching data
+    // fetch the latest sample from the sensor
 	ret = sensor_sample_fetch(dev);
     if (ret < 0 && ret != -EBADMSG) { 
 	    printk("sht31 device sample is not up to date. error: %d\n", ret);
 	    return 0;
     }
 
-    // getting channel function
+    // retrieve the humidity from the sensor
 	ret = sensor_channel_get(dev, SENSOR_CHAN_HUMIDITY, &val);
     if (ret < 0) {
         printk("can't read sensor channels. error: %d\n", ret);
 	    return 0;
     }
 
-    // convert struct to int16
+    // convert the raw humicity value to integer format with scaling
     hum = (val.val1 * HUM_SCALE) + ((int64_t)val.val2 * HUM_SCALE / 1000000);
+
+    // print the humifity value with two decimal places
     printk("sht31 humidity: %d.%02d %%RH\n", hum / HUM_SCALE, hum % HUM_SCALE);
     
     return (int16_t)hum;

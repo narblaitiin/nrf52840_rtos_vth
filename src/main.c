@@ -48,14 +48,14 @@ int main(void)
 	const struct device *dev = NULL;
 	struct nvs_fs flash;
 
-	// setup all devices
+	// initialize all devices
 	app_sht31_init(dev);
 	app_nrf52_vbat_init();
 //	app_flash_init(&flash);
 	
 	printk("Sensor SHT31 and Battery Example\nBoard: %s\n", CONFIG_BOARD);
 
-	// beginning of interrupt subroutine
+	// start the timer to trigger the interrupt subroutine every 30 seconds
 	k_timer_start(&sens_timer, K_SECONDS(30), K_SECONDS(30));		// 30s for test
 
 	return 0;
