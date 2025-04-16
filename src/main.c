@@ -18,7 +18,7 @@ void sens_work_handler(struct k_work *work_rtc)
 	int16_t bat, temp, hum;
 
 	printk("sensor handler called\n");
-  app_flash_handler(&flash);
+    app_flash_handler(&flash);
 
 	// printk("only the two sensors test: ADC & SHT31\n");
 
