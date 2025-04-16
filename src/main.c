@@ -18,20 +18,20 @@ void sens_work_handler(struct k_work *work_rtc)
 	int16_t bat, temp, hum;
 
 	printk("sensor handler called\n");
-//  app_flash_handler(&flash);
+  app_flash_handler(&flash);
 
-	printk("only the two sensors test: ADC & SHT31\n");
+	// printk("only the two sensors test: ADC & SHT31\n");
 
-	bat = app_nrf52_get_vbat();
-	printk("battery level (int16): %d%%\n", bat);
+	// bat = app_nrf52_get_vbat();
+	// printk("battery level (int16): %d%%\n", bat);
 
-	temp = app_sht31_get_temp(dev);
-	printk("sht31 Temperature (int16): %d\n", temp);
+	// temp = app_sht31_get_temp(dev);
+	// printk("sht31 Temperature (int16): %d\n", temp);
 
-	k_msleep(2000);		// small delay  between reading the temperature and humidity values
+	// k_msleep(2000);		// small delay  between reading the temperature and humidity values
 
-	hum = app_sht31_get_hum(dev);
-	printk("sht31 humidity (int16): %d", hum);
+	// hum = app_sht31_get_hum(dev);
+	// printk("sht31 humidity (int16): %d", hum);
 }
 K_WORK_DEFINE(sens_work, sens_work_handler);
 
@@ -51,7 +51,7 @@ int main(void)
 	// initialize all devices
 	app_sht31_init(dev);
 	app_nrf52_vbat_init();
-//	app_flash_init(&flash);
+	app_flash_init(&flash);
 	
 	printk("Sensor SHT31 and Battery Example\nBoard: %s\n", CONFIG_BOARD);
 
