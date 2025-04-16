@@ -32,7 +32,7 @@ struct vth {
 
 //  ========== prototypes ==================================================================
 int8_t app_flash_init(struct nvs_fs *fs);
-int8_t app_flash_store(struct nvs_fs *fs, struct vth *data);
+int8_t app_flash_store(struct nvs_fs *fs, const struct vth *data);
 int8_t app_flash_handler(struct nvs_fs *fs);
 
 #endif /* APP_FLASH_H */
