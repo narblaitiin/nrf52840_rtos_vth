@@ -120,6 +120,8 @@ int8_t app_flash_handler(struct nvs_fs *fs)
 		// measure and store the temperature using the SHT31 sensor
 		data[i].temp = app_sht31_get_temp(dev);
 
+		k_msleep(2000);		// small delay  between reading the temperature and humidity values
+
 		// measure and store the humidity using the SHT31 sensor
 		data[i].hum = app_sht31_get_hum(dev);
 	}
