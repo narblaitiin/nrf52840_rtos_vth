@@ -65,10 +65,8 @@ int8_t app_flash_init(struct nvs_fs *fs)
 //  ========== app_flash_store =============================================================
 int8_t app_flash_store(struct nvs_fs *fs, const struct vth *data)
 {	
-	int8_t ret;
-	
 	// write the data to the first page of the flash memory (8 KB)
-	ret = nvs_write(fs, NVS_SENSOR_ID, data, sizeof(struct vth) * NVS_MAX_RECORDS);
+	int8_t ret = nvs_write(fs, NVS_SENSOR_ID, data, sizeof(struct vth) * NVS_MAX_RECORDS);
 	if (ret < 0) {
         printk("failed to write data to NVS. error: %d\n", ret);
         return 0;
