@@ -32,9 +32,7 @@ int8_t app_nrf52_vbat_init()
     if (!adc_is_ready_dt(&adc_channel)) {
 		printk("ADC is not ready. error: %d\n", ret);
 		return 0;
-	} else {
-        printk("- found device \"%s\", getting vbat data\n", adc_channel.dev->name);
-    }
+	}
 
     // configure the ADC channel settings
     ret = adc_channel_setup_dt(&adc_channel);
@@ -43,7 +41,7 @@ int8_t app_nrf52_vbat_init()
 		return 0;
 	}
 
-    // Initialize the ADC sequence for continuous or single readings
+    // initialize the ADC sequence for continuous or single readings
     ret = adc_sequence_init_dt(&adc_channel, &sequence);
 	if (ret < 0) {
 		printk("failed to initialize ADC sequence. error: %d\n", ret);
@@ -62,7 +60,7 @@ int16_t app_nrf52_get_vbat()
     // read sample from the ADC
     ret = adc_read(adc_channel.dev, &sequence);
     if (ret < 0 ) {        
-	    printk("raw adc valueis not up to date. error: %d\n", ret);
+	    printk("raw adc value is not up to date. error: %d\n", ret);
 	    return 0;
     }
     printk("raw adc value: %d\n", buf);

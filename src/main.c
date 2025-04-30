@@ -18,27 +18,30 @@ void sens_work_handler(struct k_work *work_rtc)
 	// retrieve the sensor device using the device tree API
 	const struct device *sht31_dev = DEVICE_DT_GET_ONE(sensirion_sht3xd);
 	if (!device_is_ready(sht31_dev)) {
-        printk("sensor device not ready\n");
+        printk("%s: sensor device not ready\n", sht31_dev->name);
         return -ENODEV;
-    } else {
-		printk("- found device \"%s\", getting sht31 data\n", sht31_dev->name);
+    }
+
+	printk("sensor handler called\n");
+
+ 	int8_t ret = app_flash_handler(&flash);
+	if (ret != 1) {
+		printk("failed to call sensor handler");
+		return 0;
 	}
 
-//	printk("sensor handler called\n");
-//  app_flash_handler(&flash);
+	// printk("only the two sensors test: ADC & SHT31\n");
 
-	printk("only the two sensors test: ADC & SHT31\n");
+	// int16_t bat = app_nrf52_get_vbat();
+	// printk("battery level (int16): %d%%\n", bat);
 
-	int16_t bat = app_nrf52_get_vbat();
-	printk("battery level (int16): %d%%\n", bat);
+	// int16_t temp = app_sht31_get_temp(sht31_dev);
+	// printk("SHT31 temperature (int16): %d\n", temp);
 
-	int16_t temp = app_sht31_get_temp(sht31_dev);
-	printk("SHT31 Temperature (int16): %d\n", temp);
+	// k_msleep(2000);		// small delay  between reading the temperature and humidity values
 
-	k_msleep(2000);		// small delay  between reading the temperature and humidity values
-
-	int16_t hum = app_sht31_get_hum(sht31_dev);
-	printk("SHT31 humidity (int16): %d", hum);
+	// int16_t hum = app_sht31_get_hum(sht31_dev);
+	// printk("SHT31 humidity (int16): %d", hum);
 }
 K_WORK_DEFINE(sens_work, sens_work_handler);
 
@@ -54,16 +57,21 @@ int main(void)
 {
 	struct nvs_fs flash;
 
-	// initialize all devices
+	// initialize ADC device
 	int8_t ret = app_nrf52_vbat_init();
 	if (ret != 1) {
 		printk("failed to initialize ADC device");
 		return 0;
 	}
 
-	app_flash_init(&flash);
-	
-	printk("Sensor SHT31 and Battery Example\nBoard: %s\n", CONFIG_BOARD);
+	// initialize QSPI flash memory
+	ret = app_flash_init(&flash);
+	if (ret != 1) {
+		printk("failed to initialize ADC device");
+		return 0;
+	}
+
+	printk("Sensor SHT31 and Battery Example\n");
 
 	// start the timer to trigger the interrupt subroutine every 30 seconds
 	k_timer_start(&sens_timer, K_SECONDS(30), K_SECONDS(30));		// 30s for test
