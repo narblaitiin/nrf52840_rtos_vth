@@ -53,7 +53,7 @@ int8_t app_nrf52_vbat_init()
 //  ======== app_nrf52_get_vbat =============================================
 int16_t app_nrf52_get_vbat()
 {
-    int32_t percent;
+    int16_t percent;
 
     // read sample from the ADC
     int8_t ret = adc_read(adc_channel.dev, &sequence);
