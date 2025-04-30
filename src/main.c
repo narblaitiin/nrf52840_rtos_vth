@@ -14,24 +14,31 @@
 void sens_work_handler(struct k_work *work_rtc)
 {
 	struct nvs_fs flash;
-	const struct device *dev;
-	int16_t bat, temp, hum;
 
-	printk("sensor handler called\n");
-    app_flash_handler(&flash);
+	// retrieve the sensor device using the device tree API
+	const struct device *sht31_dev = DEVICE_DT_GET_ONE(sensirion_sht3xd);
+	if (!device_is_ready(sht31_dev)) {
+        printk("sensor device not ready\n");
+        return -ENODEV;
+    } else {
+		printk("- found device \"%s\", getting sht31 data\n", sht31_dev->name);
+	}
 
-	// printk("only the two sensors test: ADC & SHT31\n");
+//	printk("sensor handler called\n");
+//  app_flash_handler(&flash);
 
-	// bat = app_nrf52_get_vbat();
-	// printk("battery level (int16): %d%%\n", bat);
+	printk("only the two sensors test: ADC & SHT31\n");
 
-	// temp = app_sht31_get_temp(dev);
-	// printk("sht31 Temperature (int16): %d\n", temp);
+	int16_t bat = app_nrf52_get_vbat();
+	printk("battery level (int16): %d%%\n", bat);
 
-	// k_msleep(2000);		// small delay  between reading the temperature and humidity values
+	int16_t temp = app_sht31_get_temp(sht31_dev);
+	printk("SHT31 Temperature (int16): %d\n", temp);
 
-	// hum = app_sht31_get_hum(dev);
-	// printk("sht31 humidity (int16): %d", hum);
+	k_msleep(2000);		// small delay  between reading the temperature and humidity values
+
+	int16_t hum = app_sht31_get_hum(sht31_dev);
+	printk("SHT31 humidity (int16): %d", hum);
 }
 K_WORK_DEFINE(sens_work, sens_work_handler);
 
