@@ -45,12 +45,15 @@ K_TIMER_DEFINE(sens_timer, sens_timer_handler, NULL);
 //  ========== main ========================================================================
 int main(void)
 {
-	const struct device *dev = NULL;
 	struct nvs_fs flash;
 
 	// initialize all devices
-	app_sht31_init(dev);
-	app_nrf52_vbat_init();
+	int8_t ret = app_nrf52_vbat_init();
+	if (ret != 1) {
+		printk("failed to initialize ADC device");
+		return 0;
+	}
+
 	app_flash_init(&flash);
 	
 	printk("Sensor SHT31 and Battery Example\nBoard: %s\n", CONFIG_BOARD);

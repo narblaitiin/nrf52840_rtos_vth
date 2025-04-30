@@ -49,7 +49,7 @@ int8_t app_nrf52_vbat_init()
 		printk("failed to initialize ADC sequence. error: %d\n", ret);
 		return 0;
 	}
-    return 0;
+    return 1;
 }
 
 //  ======== app_nrf52_get_vbat =============================================

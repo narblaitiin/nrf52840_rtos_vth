@@ -101,16 +101,16 @@ int8_t app_flash_store(struct nvs_fs *fs, const struct vth *data)
 //  ========== app_flash_handler ===========================================================
 int8_t app_flash_handler(struct nvs_fs *fs)
 {
-	const struct device *dev;
 	struct vth data[NVS_MAX_RECORDS];
-	int8_t ret;
 
 	// retrieve the sensor device using the device tree API
-	dev = DEVICE_DT_GET_ONE(sensirion_sht3xd);
-	if (!device_is_ready(dev)) {
+	const struct device *sht31_dev = DEVICE_DT_GET_ONE(sensirion_sht3xd);
+	if (!device_is_ready(sht31_dev)) {
         printk("sensor device not ready\n");
         return -ENODEV;
-    }
+    } else {
+		printk("- found device \"%s\", getting sht31 data\n", sht31_dev->name);
+	}
 
 	// collect sensor data until the maximum number of records is reached
 	for (size_t i = 0; i < NVS_MAX_RECORDS; i++) {
@@ -118,16 +118,16 @@ int8_t app_flash_handler(struct nvs_fs *fs)
 		data[i].vbat = app_nrf52_get_vbat();
 
 		// measure and store the temperature using the SHT31 sensor
-		data[i].temp = app_sht31_get_temp(dev);
+		data[i].temp = app_sht31_get_temp(sht31_dev);
 
 		k_msleep(2000);		// small delay  between reading the temperature and humidity values
 
 		// measure and store the humidity using the SHT31 sensor
-		data[i].hum = app_sht31_get_hum(dev);
+		data[i].hum = app_sht31_get_hum(sht31_dev);
 	}
 
 	// save the collected sensor data into the flash memory
-	ret = app_flash_store(fs, &data);
+	int8_t ret = app_flash_store(fs, &data);
 	if (ret < 0) {
         printk("failed to store data in flash memory. error: %d\n", ret);
         return ret;

@@ -8,26 +8,6 @@
 //  ========== includes ====================================================================
 #include "app_sht31.h"
 
-//  ========== app_sht31_init ==============================================================
-int8_t app_sht31_init(const struct device *dev)
-{
-    // retrieve the SHT31 sensor's I2C device instance (Pins: SDA -> P0.09, SCL -> P0.0)
-    dev = DEVICE_DT_GET_ONE(sensirion_sht3xd);
-    if (dev == NULL) {
-        printk("error: no sht31 device found\n");
-		return 0;
-	}
-
-    // check if the retrieved device is ready for operation
-    if (!device_is_ready(dev)) {
-		printk("error: sht31 is not ready\n");
-		return 0;
-	} else {
-        printk("- found device \"%s\", getting sht31 data\n", dev->name);
-    }
-    return 0;
-}
-
 //  ========== app_sht31_get_temp ==========================================================
 int16_t app_sht31_get_temp(const struct device *dev)
 {
@@ -75,7 +55,7 @@ int16_t app_sht31_get_hum(const struct device *dev)
     // fetch the latest sample from the sensor
 	ret = sensor_sample_fetch(dev);
     if (ret < 0 && ret != -EBADMSG) { 
-	    printk("sht31 device sample is not up to date. error: %d\n", ret);
+	    printk("SHT31 device sample is not up to date. error: %d\n", ret);
 	    return 0;
     }
 
@@ -90,7 +70,7 @@ int16_t app_sht31_get_hum(const struct device *dev)
     hum = (val.val1 * HUM_SCALE) + ((int64_t)val.val2 * HUM_SCALE / 1000000);
 
     // print the humifity value with two decimal places
-    printk("sht31 humidity: %d.%02d %%RH\n", hum / HUM_SCALE, hum % HUM_SCALE);
+    printk("SHT31 humidity: %d.%02d %%RH\n", hum / HUM_SCALE, hum % HUM_SCALE);
     
     return (int16_t)hum;
 }
