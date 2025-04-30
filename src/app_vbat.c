@@ -26,8 +26,6 @@ static struct adc_sequence sequence = {
 //  ========== app_nrf52_vbat_init =========================================================
 int8_t app_nrf52_vbat_init()
 {
-    int8_t ret = 0;
-
     // verify if the ADC is ready for operation
     if (!adc_is_ready_dt(&adc_channel)) {
 		printk("ADC is not ready. error: %d\n", ret);

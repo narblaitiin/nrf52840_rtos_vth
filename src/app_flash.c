@@ -21,7 +21,7 @@ int8_t app_flash_init(struct nvs_fs *fs)
 	// check if the flash device is ready
 	if (!device_is_ready(fs->flash_device)) {
 		printk("%s: device is not ready\n", fs->flash_device->name);
-		return 1;
+		return 0;
 	}
 
 	// set the offset of the NVS partition in flash memory
@@ -31,7 +31,7 @@ int8_t app_flash_init(struct nvs_fs *fs)
 	int8_t ret = flash_get_page_info_by_offs(fs->flash_device, fs->offset, &info);
 	if (ret) {
 		printk("unable to get page info. error: %d\n", ret);
-		return 1;
+		return 0;
 	}
 	
 	// set the sector size for the NVS partition
@@ -40,7 +40,7 @@ int8_t app_flash_init(struct nvs_fs *fs)
 	// validate the sector size
 	if (!fs->sector_size) {
 		printk("invalid sector size\n");
-		return 1;
+		return 0;
 	}
 	printk("sector size: %d\n", info.size);
 
@@ -49,7 +49,7 @@ int8_t app_flash_init(struct nvs_fs *fs)
 	ret = nvs_mount(fs);
 	if (ret) {
 		printk("flash to initialize flash memory. error: %d\n", ret);
-		return 1;
+		return 0;
 	}
 
 	// clean up data stored in the NVS partition
@@ -71,7 +71,7 @@ int8_t app_flash_store(struct nvs_fs *fs, const struct vth *data)
 	ret = nvs_write(fs, NVS_SENSOR_ID, data, sizeof(struct vth) * NVS_MAX_RECORDS);
 	if (ret < 0) {
         printk("failed to write data to NVS. error: %d\n", ret);
-        return 1;
+        return 0;
     }
 
 	// log the data being written to flash memory
@@ -84,7 +84,7 @@ int8_t app_flash_store(struct nvs_fs *fs, const struct vth *data)
 	ret = nvs_read(fs, NVS_SENSOR_ID, read_data, sizeof(struct vth) * NVS_MAX_RECORDS);
 	if (ret < 0) {
         printk("failed to read data from NVS. Error: %d\n", ret);
-        return 1;
+        return 0;
     }
 
 	// log the data retrieved from flash memory to verify it matches the original data
@@ -103,7 +103,7 @@ int8_t app_flash_handler(struct nvs_fs *fs)
 	const struct device *sht31_dev = DEVICE_DT_GET_ONE(sensirion_sht3xd);
 	if (!device_is_ready(sht31_dev)) {
         printk("%s: sensor device not ready\n", sht31_dev->name);
-        return 1;
+        return 0;
     }
 
 	// collect sensor data until the maximum number of records is reached
@@ -124,7 +124,7 @@ int8_t app_flash_handler(struct nvs_fs *fs)
 	int8_t ret = app_flash_store(fs, &data);
 	if (ret < 0) {
         printk("failed to store data in flash memory. error: %d\n", ret);
-        return 1;
+        return 0;
     }
 
 	// delete the sensor data from flash memory (likely for testing purposes)
