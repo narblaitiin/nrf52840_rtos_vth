@@ -26,6 +26,8 @@ static struct adc_sequence sequence = {
 //  ========== app_nrf52_vbat_init =========================================================
 int8_t app_nrf52_vbat_init()
 {
+    int8_t ret;
+
     // verify if the ADC is ready for operation
     if (!adc_is_ready_dt(&adc_channel)) {
 		printk("ADC is not ready. error: %d\n", ret);
@@ -51,12 +53,10 @@ int8_t app_nrf52_vbat_init()
 //  ======== app_nrf52_get_vbat =============================================
 int16_t app_nrf52_get_vbat()
 {
-    int16_t percent = 0;
-    int8_t ret = 0;
-    int32_t voltage = 0;        // variable to store converted ADC value
+    int32_t percent;
 
     // read sample from the ADC
-    ret = adc_read(adc_channel.dev, &sequence);
+    int8_t ret = adc_read(adc_channel.dev, &sequence);
     if (ret < 0 ) {        
 	    printk("raw adc value is not up to date. error: %d\n", ret);
 	    return 0;
@@ -64,7 +64,7 @@ int16_t app_nrf52_get_vbat()
     printk("raw adc value: %d\n", buf);
 
     // convert ADC reading to voltage
-    voltage = (buf * ADC_REFERENCE_VOLTAGE) / ADC_RESOLUTION;
+    int32_t voltage = (buf * ADC_REFERENCE_VOLTAGE) / ADC_RESOLUTION;
     printk("convert voltage: %d mV\n", voltage);
 
     // ensure voltage is within range
@@ -80,7 +80,7 @@ int16_t app_nrf52_get_vbat()
         // use power scaling: percentage = ((difference / range) ^ 1.5) * 100
         double normalized = (double)difference / range;  // normalize to range [0, 1]
         double scaled = pow(normalized, 1.5);            // apply non-linear scaling
-        percent = (int16_t)(scaled * 100);               // convert to percentage
+        percent = (int16_t)(scaled * 100);       // convert to percentage
     } else {
         printk("error: Invalid range or difference.\n");
         percent = 0;
