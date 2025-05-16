@@ -11,7 +11,7 @@
 
 //  ========== globals =====================================================================
 // ADC buffer to store raw ADC readings
-int16_t buf;
+int32_t buf;
 
 // ADC channel configuration obtained from the device tree
 static const struct adc_dt_spec adc_channel = ADC_DT_SPEC_GET(DT_PATH(zephyr_user));
@@ -77,9 +77,8 @@ int16_t app_nrf52_get_vbat()
     int32_t difference = voltage - BATTERY_MIN_VOLTAGE;
 
     if (range > 0 && difference > 0) {
-        // use power scaling: percentage = ((difference / range) ^ 1.5) * 100
         double normalized = (double)difference / range;  // normalize to range [0, 1]
-        double scaled = pow(normalized, 1.5);            // apply non-linear scaling
+        double scaled = pow(normalized, 1.2);            // apply non-linear scaling
         percent = (int16_t)(scaled * 100);       // convert to percentage
     } else {
         printk("error: Invalid range or difference.\n");
