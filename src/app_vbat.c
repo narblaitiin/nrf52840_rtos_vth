@@ -81,7 +81,7 @@ int16_t app_nrf52_get_vbat()
         double scaled = pow(normalized, 1.2);            // apply non-linear scaling
         percent = (int16_t)(scaled * 100);       // convert to percentage
     } else {
-        printk("error: Invalid range or difference.\n");
+        printk("invalid range or difference\n");
         percent = 0;
     }
 
