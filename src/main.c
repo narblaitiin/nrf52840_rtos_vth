@@ -38,7 +38,7 @@ void sens_work_handler(struct k_work *work_rtc)
 	int16_t temp = app_sht31_get_temp(sht31_dev);
 	printk("SHT31 temperature (int16): %d\n", temp);
 
-	k_msleep(2000);		// small delay  between reading the temperature and humidity values
+	k_msleep(5000);		// small delay  between reading the temperature and humidity values
 
 	int16_t hum = app_sht31_get_hum(sht31_dev);
 	printk("SHT31 humidity (int16): %d", hum);
