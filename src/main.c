@@ -75,6 +75,5 @@ int main(void)
 
 	// start the timer to trigger the interrupt subroutine every 30 seconds
 	k_timer_start(&sens_timer, K_NO_WAIT, K_SECONDS(30));		// 30s for test
-
 	return 0;
 }

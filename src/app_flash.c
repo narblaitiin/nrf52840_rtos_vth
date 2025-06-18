@@ -52,13 +52,9 @@ int8_t app_flash_init(struct nvs_fs *fs)
 		return 0;
 	}
 
-	// clean up data stored in the NVS partition
-//	(void)nvs_delete(fs, NVS_SENSOR_ID);
-
 	// calculate and display the free space in the NVS partition
 	ssize_t size =  nvs_calc_free_space(fs);
 	printk("flash memory partition size: %d\n", size);
-
 	return 1;
 }
 
