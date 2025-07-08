@@ -52,7 +52,6 @@ K_WORK_DEFINE(sens_work, sens_work_handler);
 
 void sens_timer_handler(struct k_timer *rtc_dum)
 {
-	printk("timer handler triggered\n");
 	k_work_submit(&sens_work);
 }
 K_TIMER_DEFINE(sens_timer, sens_timer_handler, NULL);
