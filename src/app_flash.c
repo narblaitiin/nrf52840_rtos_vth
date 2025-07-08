@@ -32,51 +32,6 @@ int8_t app_flash_init(const struct device *dev)
 }
 
 //  ========== app_flash_store =============================================================
-// int8_t app_flash_store(const struct device *dev, const struct vth *data)
-// {	
-// 	uint32_t head;
-// 	int8_t ret;
-
-// 	// read current head index
-// 	ret = flash_read(dev, FLASH_HEAD_OFFSET, &head, sizeof(head));
-// 	if (ret != 0) {
-// 		printk("failed to read head index\n");
-// 		return -1;
-// 	}
-
-// 	uint32_t index = head % MAX_RECORDS;
-
-// 	// compute write offset (aligned)
-// 	off_t erase_offset = FLASH_DATA_OFFSET + index * FLASH_SECTOR_SIZE;
-
-// 	printk("writing at index %u (offset 0x%x) -> vbat: %d, temp: %d, hum: %d\n",
-// 	       index, (uint32_t)erase_offset, data->vbat, data->temp, data->hum);
-
-// 	// erase flash sector (aligned)
-// 	ret = flash_erase(dev, erase_offset, FLASH_SECTOR_SIZE);
-// 	if (ret != 0) {
-// 		printk("flash erase failed at offset 0x%x, err: %d\n", (uint32_t)erase_offset, ret);
-// 		return -1;
-// 	}
-
-// 	// Write record to flash
-// 	ret = flash_write(dev, erase_offset, data, RECORD_SIZE);
-// 	if (ret != 0) {
-// 		printk("flash write failed at offset 0x%x, err: %d\n", (uint32_t)erase_offset, ret);
-// 		return -1;
-// 	}
-
-// 	// Update and write back head index
-// 	head = (head + 1) % MAX_RECORDS;
-// 	ret = flash_write(dev, FLASH_HEAD_OFFSET, &head, sizeof(head));
-// 	if (ret != 0) {
-// 		printk("failed to update head index\n");
-// 		return -1;
-// 	}
-
-// 	return 1;
-// }
-
 int8_t app_flash_store(const struct vth *data)
 {
     const struct flash_area *fa;
