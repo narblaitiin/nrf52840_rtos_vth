@@ -21,9 +21,9 @@ void sens_work_handler(struct k_work *work_rtc)
     }
 
 	// retrieve the partition memory using the device tree API
-	const struct device *flash_dev = DEVICE_DT_GET(DT_MTD_FROM_FIXED_PARTITION(DT_NODELABEL(storage_partition)));
+	const struct device *flash_dev = FIXED_PARTITION_ID(storage_partition);
 	if (!device_is_ready(flash_dev)) {
-        printk("%s: flash memory not ready\n", sht31_dev->name);
+        printk("%s: flash memory not ready\n", flash_dev->name);
         return -ENODEV;
     }
 	printk("sensor handler called\n");
@@ -68,7 +68,7 @@ int main(void)
 	}
 
 	// initialize partition flash memory
-	const struct device *flash_dev = DEVICE_DT_GET(DT_MTD_FROM_FIXED_PARTITION(DT_NODELABEL(storage_partition)));
+	const struct device *flash_dev = FIXED_PARTITION_ID(storage_partition);
 	ret = app_flash_init(flash_dev);
 	if (ret != 1) {
 		printk("failed to initialize QSPI Flash device\n");

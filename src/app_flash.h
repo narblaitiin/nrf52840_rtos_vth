@@ -31,11 +31,11 @@ struct vth {
 #define FLASH_HEAD_OFFSET		FLASH_PARTITION_OFFSET                   
 #define FLASH_DATA_OFFSET       (FLASH_HEAD_OFFSET + FLASH_SECTOR_SIZE)  // 0x000FC800
 
-#define MAX_RECORDS             10
-#define RECORD_SIZE             sizeof(struct vth)                            
+#define MAX_RECORDS             10 // 1440 or can be (FLASH_TOTAL_SIZE - FLASH_SECTOR_SIZE) / RECORD_SIZE
+#define RECORD_SIZE             sizeof(struct vth)  
+#define MAGIC_KEY				0xA5A5A5A5
 
 //  ========== prototypes ==================================================================
-int8_t app_flash_init(const struct device *dev);
 int8_t app_flash_store(const struct vth *data);
 int8_t app_flash_handler(const struct device *dev);
 
