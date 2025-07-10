@@ -71,7 +71,7 @@ int main(void)
 	const struct device *flash_dev = FIXED_PARTITION_ID(storage_partition);
 	ret = app_flash_init(flash_dev);
 	if (ret != 1) {
-		printk("failed to initialize QSPI Flash device\n");
+		printk("failed to initialize internal Flash device\n");
 		return 0;
 	}
 
