@@ -17,29 +17,32 @@ struct flash_header {
 };
 
 //  ========== app_flash_init ==============================================================
-int8_t app_flash_init(const struct device *dev)
+int8_t app_flash_init()
 {
-	if (!device_is_ready(dev)) {
-		printk("flash device not ready\n");
-		return -1;
+	const struct flash_area *fa;
+	int8_t  ret = flash_area_open(FIXED_PARTITION_ID(storage_partition), &fa);
+	if (ret != 0) {
+    	printk("Failed to open flash area\n");
+    	return -1;
 	}
-
+	
 	struct flash_header hdr;
-	flash_read(dev, FLASH_HEAD_OFFSET, &hdr, sizeof(hdr));
+	flash_area_read(fa, FLASH_HEAD_OFFSET, &hdr, sizeof(hdr));
 
 	if (hdr.magic != MAGIC_KEY) {
 		printk("flash not initialized. initializing now.\n");
 
 		// Erase first sector
-		flash_erase(dev, FLASH_HEAD_OFFSET, FLASH_SECTOR_SIZE);
+		flash_area_erase(fa, FLASH_HEAD_OFFSET, FLASH_SECTOR_SIZE);
 
 		// Write new header
 		hdr.magic = MAGIC_KEY;
 		hdr.head = 0;
-		flash_write(dev, FLASH_HEAD_OFFSET, &hdr, sizeof(hdr));
+		flash_area_write(fa, FLASH_HEAD_OFFSET, &hdr, sizeof(hdr));
 	} else {
 		printk("flash already initialized. Head: %u\n", hdr.head);
 	}
+	flash_area_close(fa);
 	return 1;
 }
 
@@ -47,7 +50,7 @@ int8_t app_flash_init(const struct device *dev)
 int8_t app_flash_store(const struct vth *data)
 {
     const struct flash_area *fa;
-    int ret = flash_area_open(FIXED_PARTITION_ID(storage_partition), &fa);
+    int8_t ret = flash_area_open(FIXED_PARTITION_ID(storage_partition), &fa);
     if (ret != 0) {
         printk("failed to open flash area\n");
         return -1;
@@ -99,14 +102,8 @@ int8_t app_flash_handler(const struct device *dev)
 	struct vth data;
 
 	// retrieve the sensor device using the device tree API
-	const struct device *sht31_dev = DEVICE_DT_GET_ONE(sensirion_sht3xd);
-	if (!device_is_ready(sht31_dev)) {
-        printk("%s: sensor device not ready\n", sht31_dev->name);
-        return -1;
-    }
-
 	if (!device_is_ready(dev)) {
-        printk("%s: device is not ready\n", dev->name);
+        printk("%s: sensor device not ready\n", dev->name);
         return -1;
     }
 
@@ -115,12 +112,12 @@ int8_t app_flash_handler(const struct device *dev)
 	data.vbat = app_nrf52_get_vbat();
 
 	// measure and store the temperature using the SHT31 sensor
-	data.temp = app_sht31_get_temp(sht31_dev);
+	data.temp = app_sht31_get_temp(dev);
 
 	k_msleep(5000);		// small delay  between reading the temperature and humidity values
 
 	// measure and store the humidity using the SHT31 sensor
-	data.hum = app_sht31_get_hum(sht31_dev);
+	data.hum = app_sht31_get_hum(dev);
 
 	// save the collected sensor data into the flash memory
 	int8_t ret = app_flash_store(&data);

@@ -19,17 +19,10 @@ void sens_work_handler(struct k_work *work_rtc)
         printk("%s: sensor device not ready\n", sht31_dev->name);
         return -ENODEV;
     }
-
-	// retrieve the partition memory using the device tree API
-	const struct device *flash_dev = FIXED_PARTITION_ID(storage_partition);
-	if (!device_is_ready(flash_dev)) {
-        printk("%s: flash memory not ready\n", flash_dev->name);
-        return -ENODEV;
-    }
-	printk("sensor handler called\n");
+	printk("sht31 device ready\n");
 
 	printk("two sensors test and W/R flash memory test\n");
- 	int8_t ret = app_flash_handler(flash_dev);
+ 	int8_t ret = app_flash_handler(sht31_dev);
 	if (ret != 1) {
 		printk("failed to call sensor handler");
 		return 0;
@@ -66,10 +59,10 @@ int main(void)
 		printk("failed to initialize ADC device");
 		return 0;
 	}
+	printk("adc device initialized\n");
 
 	// initialize partition flash memory
-	const struct device *flash_dev = FIXED_PARTITION_ID(storage_partition);
-	ret = app_flash_init(flash_dev);
+	ret = app_flash_init();
 	if (ret != 1) {
 		printk("failed to initialize internal Flash device\n");
 		return 0;

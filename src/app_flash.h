@@ -23,19 +23,20 @@ struct vth {
 };
 
 //  ========== defines =====================================================================
-#define FLASH_PARTITION_OFFSET  0x000FC000	
+#define FLASH_PARTITION_OFFSET  0x000F8000	
 #define FLASH_SECTOR_SIZE       4096		// one flash page = 4 KB		
 #define FLASH_SECTOR_COUNT      4			// 4 sectors × 4 KB = 16 KB
 #define FLASH_TOTAL_SIZE        (FLASH_SECTOR_SIZE * FLASH_SECTOR_COUNT)
 
-#define FLASH_HEAD_OFFSET		FLASH_PARTITION_OFFSET                   
-#define FLASH_DATA_OFFSET       (FLASH_HEAD_OFFSET + FLASH_SECTOR_SIZE)  // 0x000FC800
+#define FLASH_HEAD_OFFSET		0x0000                 
+#define FLASH_DATA_OFFSET       0x0100
 
-#define MAX_RECORDS             10 // 1440 or can be (FLASH_TOTAL_SIZE - FLASH_SECTOR_SIZE) / RECORD_SIZE
-#define RECORD_SIZE             sizeof(struct vth)  
-#define MAGIC_KEY				0xA5A5A5A5
+#define MAX_RECORDS             (0x8000 - FLASH_DATA_OFFSET) / RECORD_SIZE  // = 4064
+#define RECORD_SIZE             8 
+#define MAGIC_KEY				0xDEADBEEF
 
 //  ========== prototypes ==================================================================
+int8_t app_flash_init(void);
 int8_t app_flash_store(const struct vth *data);
 int8_t app_flash_handler(const struct device *dev);
 
