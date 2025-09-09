@@ -32,10 +32,10 @@ int8_t app_flash_init()
 	if (hdr.magic != MAGIC_KEY) {
 		printk("flash not initialized. initializing now.\n");
 
-		// Erase first sector
+		// erase first sector
 		flash_area_erase(fa, FLASH_HEAD_OFFSET, FLASH_SECTOR_SIZE);
 
-		// Write new header
+		// write new header
 		hdr.magic = MAGIC_KEY;
 		hdr.head = 0;
 		flash_area_write(fa, FLASH_HEAD_OFFSET, &hdr, sizeof(hdr));
@@ -46,7 +46,7 @@ int8_t app_flash_init()
 	return 1;
 }
 
-//  ========== app_flash_store =============================================================
+//  ========== app_flash_store =======================================================================
 int8_t app_flash_store(const struct vth *data)
 {
     const struct flash_area *fa;
@@ -96,7 +96,7 @@ int8_t app_flash_store(const struct vth *data)
     return 0;
 }
 
-//  ========== app_flash_handler ===========================================================
+//  ========== app_flash_handler =====================================================================
 int8_t app_flash_handler(const struct device *dev)
 {
 	struct vth data;

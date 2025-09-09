@@ -5,10 +5,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-//  ========== includes ====================================================================
+//  ========== includes ==============================================================================
 #include "app_sht31.h"
 
-//  ========== app_sht31_get_temp ==========================================================
+//  ========== app_sht31_get_temp ====================================================================
 int16_t app_sht31_get_temp(const struct device *dev)
 {
     struct sensor_value val;
@@ -35,7 +35,7 @@ int16_t app_sht31_get_temp(const struct device *dev)
     return (int16_t)temp;
 }
 
-//  ========== app_sht31_get_hum ===========================================================
+//  ========== app_sht31_get_hum =====================================================================
 int16_t app_sht31_get_hum(const struct device *dev)
 {
     struct sensor_value val;
