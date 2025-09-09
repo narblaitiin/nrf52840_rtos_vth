@@ -53,7 +53,7 @@ int8_t app_nrf52_vbat_init()
 //  ======== app_nrf52_get_vbat =============================================
 int16_t app_nrf52_get_vbat()
 {
-    int16_t percent;
+    int16_t percent = 0;
 
     // read sample from the ADC
     int8_t ret = adc_read(adc_channel.dev, &sequence);
@@ -63,18 +63,21 @@ int16_t app_nrf52_get_vbat()
     }
     printk("raw adc value: %d\n", buf);
 
-    // convert ADC reading to voltage
-    int32_t voltage = (buf * ADC_REFERENCE_VOLTAGE) / ADC_RESOLUTION;
-    printk("convert voltage: %d mV\n", voltage);
+    // convert raw ADC reading to voltage
+    int32_t v_adc = (buf * ADC_FULL_SCALE_MV) / ADC_RESOLUTION;
+    printk("convert voltage: %d mV\n", v_adc);
 
-    // ensure voltage is within range
-    if (voltage > BATTERY_MAX_VOLTAGE) voltage = BATTERY_MAX_VOLTAGE;
-    if (voltage < BATTERY_MIN_VOLTAGE) voltage = BATTERY_MIN_VOLTAGE + 1;
-    printk("clamped voltage: %d mV\n", voltage);
+    // scale back to actual battery voltage using voltage divider
+    int32_t v_bat = (v_adc * DIVIDER_RATIO_NUM) / DIVIDER_RATIO_DEN;
+
+    // clamp voltage within battery range
+    if (v_bat > BATTERY_MAX_VOLTAGE) v_bat = BATTERY_MAX_VOLTAGE;
+    if (v_bat < BATTERY_MIN_VOLTAGE) v_bat = BATTERY_MIN_VOLTAGE + 1;
+    printk("clamped voltage: %d mV\n", v_bat);
 
     // non-linear scaling
     int32_t range = BATTERY_MAX_VOLTAGE - BATTERY_MIN_VOLTAGE;
-    int32_t difference = voltage - BATTERY_MIN_VOLTAGE;
+    int32_t difference = v_bat - BATTERY_MIN_VOLTAGE;
 
     if (range > 0 && difference > 0) {
         double normalized = (double)difference / range;  // normalize to range [0, 1]
